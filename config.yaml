@@ -1,0 +1,37 @@
+# Pipeline configuration — URLs, thresholds, and SLAs live here, never in code.
+source:
+  feed_url: "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson"
+  source_system: "usgs_earthquake_feed"
+
+http:
+  timeout_seconds: 30
+  retries: 3
+  backoff_seconds: 2
+
+paths:
+  warehouse: "warehouse/seismic.duckdb"
+  raw_dir: "data/raw"
+
+cleaning:
+  required_columns:
+    - id
+    - mag
+    - place
+    - event_time
+    - event_type
+    - longitude
+    - latitude
+    - depth_km
+  accepted_event_types:
+    - earthquake
+  mag:
+    min: -2.0
+    max: 10.0
+  depth_km:
+    min: -100.0
+    max: 700.0
+  max_future_hours: 24
+  max_age_days: 35
+
+freshness:
+  max_age_hours: 48     # SLA: newest event must be younger than this
