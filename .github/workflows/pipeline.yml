@@ -1,0 +1,35 @@
+name: API pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "17 */6 * *"   # every 6 hours, off-peak minute
+  workflow_dispatch:
+
+jobs:
+  test-and-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Cache raw payloads (content-addressed, no re-download)
+        uses: actions/cache@v4
+        with:
+          path: data/raw
+          key: raw-payloads-v1
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Data quality gates
+        run: python -m pytest -q
+
+      - name: Run pipeline
+        run: python -m src.pipeline
