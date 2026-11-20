@@ -1,10 +1,17 @@
 # API Ingestion Pipeline
 
-Project #2 of a beginner data-engineering portfolio: a **live API → database**
+[![API pipeline](https://github.com/Abdelrahman-0-20/api-ingestion-pipeline/actions/workflows/pipeline.yml/badge.svg)](https://github.com/Abdelrahman-0-20/api-ingestion-pipeline/actions/workflows/pipeline.yml)
+
+Project #2 of a [data engineering portfolio](https://github.com/Abdelrahman-0-20/analytics-engineering-pipeline)
+(companion: [analytics engineering pipeline](https://github.com/Abdelrahman-0-20/analytics-engineering-pipeline) —
+batch-file ETL with a live dashboard): a **live API → database**
 pipeline. Ingests the **USGS earthquake feed** (public GeoJSON, no API key,
 updates every minute) into **DuckDB** with retries, content-addressed raw
 storage, incremental upserts by natural key, schema-drift alerts, and a
 freshness SLA — all gated by **pytest** and scheduled by **GitHub Actions**.
+
+**Pipeline at a glance:** 9,728 events per fetch · 339 rejected by quality gates ·
+newest event < 1h old (SLA: 48h) · rerun proves `new: 0, changed: 0`.
 
 ## Architecture
 
@@ -42,7 +49,7 @@ python -m pytest -q      # data quality gates must pass
 Run it twice: the second run reports `new: 0, changed: 0` — the proof that
 upserts and dedupe actually work.
 
-## How this differs from project #1 (file-based ETL)
+## How this differs from [project #1](https://github.com/Abdelrahman-0-20/analytics-engineering-pipeline) (file-based ETL)
 
 | Concern | Project #1 (batch files) | This project (live API) |
 |---|---|---|
